@@ -1,8 +1,32 @@
+resource "aws_security_group" "this" {
+  name        = "${var.project}-lb-secgroup"
+  description = "Traffic rules"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "Allow HTTP"
+    from_port   = "80"
+    to_port     = "80"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+
 resource "aws_lb" "this" {
   name               = "${var.project}-vpc"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = var.secgroup_ids
+  security_groups    = [aws_security_group.this.id]
   enable_deletion_protection = false
 
   subnets = var.subnet_ids
@@ -12,11 +36,6 @@ resource "aws_lb" "this" {
   enable_http2 = true
 
   idle_timeout = 60
-  access_logs {
-    bucket  = "superops-tfstate"
-    prefix  = "lblogs"
-    enabled = true
-  }
 }
 
 
@@ -28,8 +47,12 @@ resource "aws_lb_target_group" "this" {
   vpc_id = var.vpc_id
 }
 
+# locals {
+#   instance_tags = { for instance in var.instance_ids : instance => instance.tags }
+# }
+
 resource "aws_lb_target_group_attachment" "this" {
-  for_each = toset(var.instance_ids)
+  for_each = { for idx, id in var.instance_ids : idx => id }
   target_group_arn = aws_lb_target_group.this.arn
   target_id        = each.value
 }

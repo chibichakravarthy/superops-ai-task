@@ -4,9 +4,10 @@ project = "superops"
 
 #VPC
 vpc_cidr_block = "10.0.0.0/20"
-private_zone_1_subnet_cidr_block = "10.0.2.0/24"
-private_zone_2_subnet_cidr_block = "10.0.3.0/24"
-public_subnet_cidr_block = "10.0.1.0/24"
+private_zone_1_subnet_cidr_block = "10.0.3.0/24"
+private_zone_2_subnet_cidr_block = "10.0.4.0/24"
+public_zone_1_subnet_cidr_block = "10.0.1.0/24"
+public_zone_2_subnet_cidr_block = "10.0.2.0/24"
 availability_zone = "ap-south-1a"
 
 #VM

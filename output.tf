@@ -4,9 +4,14 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
-output "public_subnet_id" {
+output "public_zone1_subnet_id" {
   description = "The ID of the public subnet"
-  value       = module.vpc.public_subnet_id
+  value       = module.vpc.public_zone_1_subnet_id
+}
+
+output "public_zone2_subnet_id" {
+  description = "The ID of the public subnet"
+  value       = module.vpc.public_zone_2_subnet_id
 }
 
 output "private_zone1_subnet_id" {

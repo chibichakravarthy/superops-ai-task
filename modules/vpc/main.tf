@@ -23,10 +23,22 @@ resource "aws_internet_gateway" "this" {
 
 # Subnet Setup - START
 # Public Subnet Setup - START
-resource "aws_subnet" "public" {
+resource "aws_subnet" "public_zone_1" {
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.public_subnet_cidr_block
-  availability_zone = var.availability_zone
+  cidr_block              = var.public_zone_1_subnet_cidr_block
+  availability_zone = var.availability_zone[0]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name    = "${var.project}-public-subnet"
+    Project = var.project
+  }
+}
+
+resource "aws_subnet" "public_zone_2" {
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = var.public_zone_2_subnet_cidr_block
+  availability_zone = var.availability_zone[1]
   map_public_ip_on_launch = true
 
   tags = {
@@ -49,8 +61,13 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
+resource "aws_route_table_association" "public_zone_1" {
+  subnet_id      = aws_subnet.public_zone_1.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public_zone_2" {
+  subnet_id      = aws_subnet.public_zone_2.id
   route_table_id = aws_route_table.public.id
 }
 # Public Subnet Setup - END
@@ -68,7 +85,7 @@ resource "aws_eip" "this" {
 
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this.id
-  subnet_id     = aws_subnet.public.id
+  subnet_id     = aws_subnet.public_zone_1.id
 
   tags = {
     Name    = "${var.project}-ngw"
@@ -82,42 +99,24 @@ resource "aws_nat_gateway" "this" {
 resource "aws_subnet" "private_zone_1" {
   vpc_id     = aws_vpc.this.id
   cidr_block = var.private_zone_1_subnet_cidr_block
-  availability_zone = var.availability_zone
+  availability_zone = var.availability_zone[0]
   tags = {
     Name    = "${var.project}-private-zone-1-subnet"
     Project = var.project
   }
 }
 
-resource "aws_route_table" "private_zone_1" {
-  vpc_id = aws_vpc.this.id
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.this.id
-  }
-
-  tags = {
-    Name    = "${var.project}-private-zone-1-rt"
-    Project = var.project
-  }
-}
-
-resource "aws_route_table_association" "private_zone_1" {
-  subnet_id      = aws_subnet.private_zone_1.id
-  route_table_id = aws_route_table.private_zone_1.id
-}
-
 resource "aws_subnet" "private_zone_2" {
   vpc_id     = aws_vpc.this.id
   cidr_block = var.private_zone_2_subnet_cidr_block
-  availability_zone = "ap-south-1b"
+  availability_zone = var.availability_zone[1]
   tags = {
     Name    = "${var.project}-private-zone-2-subnet"
     Project = var.project
   }
 }
 
-resource "aws_route_table" "private_zone_2" {
+resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
   route {
     cidr_block     = "0.0.0.0/0"
@@ -125,14 +124,32 @@ resource "aws_route_table" "private_zone_2" {
   }
 
   tags = {
-    Name    = "${var.project}-private-zone-2-rt"
+    Name    = "${var.project}-private-rt"
     Project = var.project
   }
 }
 
+resource "aws_route_table_association" "private_zone_1" {
+  subnet_id      = aws_subnet.private_zone_1.id
+  route_table_id = aws_route_table.private.id
+}
+
+# resource "aws_route_table" "private_zone_2" {
+#   vpc_id = aws_vpc.this.id
+#   route {
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = aws_nat_gateway.this.id
+#   }
+
+#   tags = {
+#     Name    = "${var.project}-private-zone-2-rt"
+#     Project = var.project
+#   }
+# }
+
 resource "aws_route_table_association" "private_zone_2" {
   subnet_id      = aws_subnet.private_zone_2.id
-  route_table_id = aws_route_table.private_zone_2.id
+  route_table_id = aws_route_table.private.id
 }
 # Private Subnet Setup - END
 # Subnet Setup - END
