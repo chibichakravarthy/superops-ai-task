@@ -25,11 +25,6 @@ variable "server_name" {
   type = string
 }
 
-# variable "route53_zone_id" {
-#   description = "The ID of the Route53 zone to create records in."
-#   type        = string
-# }
-
 variable "project" {
   description = "Project tag"
   type        = string
@@ -44,12 +39,6 @@ variable "associate_public_ip_address" {
   description = "Assign a public IP"
   type = bool
 }
-
-# variable "allocated_storage" {
-#   description = "The size of the drive in gigabytes"
-#   type        = number
-#   default     = 20
-# }
 
 variable "port" {
   description = "The port to allow in Security Group"

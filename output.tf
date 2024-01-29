@@ -32,6 +32,18 @@ output "bastion_ip" {
 }
 
 output "app1_ip" {
-  description = "Public IP of the VM"
+  description = "IP of the VM"
   value = module.app1.vm_ip
 }
+
+output "app2_ip" {
+  description = "IP of the VM"
+  value = module.app2.vm_ip
+}
+
+#LB - START
+output "lb_dns" {
+  description = "Domain for the LB"
+  value = module.lb.lb_dns
+}
+#LB - END

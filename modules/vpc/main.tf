@@ -30,7 +30,7 @@ resource "aws_subnet" "public_zone_1" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.project}-public-subnet"
+    Name    = "${var.project}-public-zone-1-subnet"
     Project = var.project
   }
 }
@@ -42,7 +42,7 @@ resource "aws_subnet" "public_zone_2" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.project}-public-subnet"
+    Name    = "${var.project}-public-zone-2-subnet"
     Project = var.project
   }
 }

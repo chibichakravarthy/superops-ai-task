@@ -19,22 +19,6 @@ resource "aws_security_group" "this" {
       security_groups = var.secgroup_id == "" ? null : var.secgroup_id
     }
   }
-
-#   ingress {
-#     description = "App port"
-#     from_port   = var.port
-#     to_port     = var.port
-#     protocol    = "tcp"
-#     cidr_blocks = [data.aws_vpc.selected.cidr_block]
-#   }
-
-#   ingress {
-#     description = "Allow SSH"
-#     from_port   = 22
-#     to_port     = 22
-#     protocol    = "tcp"
-#     cidr_blocks = [data.aws_vpc.selected.cidr_block]
-#   }
   egress {
     description      = "Allow all outbound traffic"
     from_port        = 0
@@ -76,9 +60,6 @@ resource "aws_instance" "this" {
   key_name               = aws_key_pair.this.key_name
   associate_public_ip_address = var.associate_public_ip_address
   user_data = local.mysql_install
-#   root_block_device {
-#     volume_size = var.allocated_storage
-#   }
   tags = {
     Name        = "${var.project}-${var.server_name}-ec2"
     Project     = var.project
@@ -86,15 +67,3 @@ resource "aws_instance" "this" {
 }
 
 #EC2 - END
-
-#Route53 Entry - START
-
-# resource "aws_route53_record" "this" {
-#   zone_id = data.aws_route53_zone.selected.zone_id
-#   name    = "${var.sub_domain}.${data.aws_route53_zone.selected.name}"
-#   type    = "A"
-#   ttl     = 300
-#   records = [aws_instance.this.private_ip]
-# }
-
-#Route53 Entry - END
